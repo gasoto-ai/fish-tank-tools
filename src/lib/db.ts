@@ -2,6 +2,31 @@ import Database from "better-sqlite3"
 import path from "path"
 import fs from "fs"
 
+// ─── Exported types ────────────────────────────────────────────────────────────
+
+export type TaskStatus = "todo" | "in-progress" | "done"
+
+export type Task = {
+  id: number
+  title: string
+  description: string | null
+  status: TaskStatus
+  author: string
+  created_at: string
+  updated_at: string
+}
+
+export type Note = {
+  id: number
+  title: string
+  content: string
+  author: string
+  created_at: string
+  updated_at: string
+}
+
+// ─── DB singleton ──────────────────────────────────────────────────────────────
+
 const DB_PATH = path.join(process.cwd(), "data", "fish-tank-tools.db")
 
 const dataDir = path.dirname(DB_PATH)
@@ -21,6 +46,8 @@ export function getDb(): Database.Database {
   }
   return _db
 }
+
+// ─── Schema ────────────────────────────────────────────────────────────────────
 
 function initSchema(db: Database.Database) {
   db.exec(`
@@ -44,6 +71,8 @@ function initSchema(db: Database.Database) {
     );
   `)
 }
+
+// ─── Seed ──────────────────────────────────────────────────────────────────────
 
 function seedIfEmpty(db: Database.Database) {
   const count = (db.prepare("SELECT COUNT(*) as c FROM tasks").get() as { c: number }).c
