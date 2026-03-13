@@ -31,6 +31,10 @@ export async function DELETE(
 ) {
   const { id } = await params
   const db = getDb()
+
+  const note = db.prepare("SELECT id FROM notes WHERE id = ?").get(id)
+  if (!note) return NextResponse.json({ error: "Not found" }, { status: 404 })
+
   db.prepare("DELETE FROM notes WHERE id = ?").run(id)
   return NextResponse.json({ success: true })
 }
